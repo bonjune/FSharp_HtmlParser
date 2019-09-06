@@ -16,13 +16,14 @@ type TestClass () =
         let actual =
             match run pbody body with
             | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> { Attributes = []; Tags = [] }
+            | Failure(_, _, _) -> HtmlBody { Attributes = []; Tags = [] }
 
         let expected = 
-            { Attributes = [
-                Class(ClassAtt [ClassName "hs-home"]) 
-                ];
-            Tags = [] 
+            HtmlBody { 
+                Attributes = [
+                    Class ["hs-home"]
+                    ];
+                Tags = [] 
             }
 
         Assert.AreEqual(expected, actual)
@@ -33,14 +34,15 @@ type TestClass () =
         let actual =
             match run pbody body with
             | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> { Attributes = []; Tags = [] }
+            | Failure(_, _, _) -> HtmlBody { Attributes = []; Tags = [] }
 
         let expected = 
-            { Attributes = [
-                Class(ClassAtt [ClassName "hs-home"]) 
-                Id(IdAtt "hs_cos_wrapper_module_154623948344039") 
-                ]; 
-            Tags = [] 
+            HtmlBody { 
+                Attributes = [
+                    Class ["hs-home"] 
+                    Id "hs_cos_wrapper_module_154623948344039"
+                    ]; 
+                Tags = [] 
             }
 
         Assert.AreEqual(expected, actual)
@@ -51,21 +53,81 @@ type TestClass () =
         let actual =
             match run pbody body with
             | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> { Attributes = []; Tags = [] }
+            | Failure(_, _, _) -> HtmlBody { Attributes = []; Tags = [] }
 
         let expected = 
-            { Attributes = [
-                Title(TitleAtt "Download the Case Study")
-                Class(ClassAtt [
-                    ClassName "hs-home"
-                    ClassName "hs-content-id-10345721341"
-                    ClassName "hs-site-page"
-                    ClassName "page"
-                    ]) 
-                Id(IdAtt "hs_cos_wrapper_module_154623948344039") 
+            HtmlBody { 
+                Attributes = [
+                    Title "Download the Case Study"
+                    Class [
+                        "hs-home"
+                        "hs-content-id-10345721341"
+                        "hs-site-page"
+                        "page"
+                        ]
+                    Id "hs_cos_wrapper_module_154623948344039"
                 ]; 
-            Tags = [] 
+                Tags = [] 
             }
 
         Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseDivTagWithClassAttribute() =
+        let div = "<div class=\"row-fluid \"></div>"
+        let actual =
+            match run pdiv div with
+            | Success(result, _, _)   -> result 
+            | Failure(_, _, _) -> HtmlDiv { Attributes = []; Tags = [] }
+
+        let expected = 
+            HtmlDiv { 
+                Attributes = [ Class ["row-fluid"] ]; 
+                Tags = [] 
+            }
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>] 
+    member this.ItShouldParseNestedDivTags() =
+        let divs = "<div><div></div></div>"
+        let actual =
+            match run pdiv divs with
+            | Success(result, _, _)   -> result 
+            | Failure(_, _, _) -> HtmlDiv { Attributes = []; Tags = [] }
+
+        let expected =
+            HtmlDiv {
+                Attributes = []
+                Tags = [
+                    HtmlDiv {
+                        Attributes = []
+                        Tags = []
+                        }
+                    ]
+                }
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>] 
+    member this.ItShouldParseDivTagInsideBodyTag() =
+        let tags = "<body><div></div></body>"
+        let actual =
+            match run pbody tags with
+            | Success(result, _, _)   -> result 
+            | Failure(_, _, _) -> HtmlBody { Attributes = []; Tags = [] }
+
+        let expected =
+            HtmlBody {
+                Attributes = []
+                Tags = [
+                    HtmlDiv {
+                        Attributes = []
+                        Tags = []
+                        }
+                    ]
+                }
+
+        Assert.AreEqual(expected, actual)
+
 

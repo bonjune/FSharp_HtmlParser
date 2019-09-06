@@ -15,9 +15,9 @@ type TestClass () =
         let actual = 
             match run pclass attribute with 
             | Success(result, _, _)   -> result 
-            | Failure(errorMsg, _, _) -> Class (ClassAtt [])
+            | Failure(errorMsg, _, _) -> Class []
 
-        let expected = Class (ClassAtt [ ClassName "hs-home" ])
+        let expected = Class [ "hs-home" ]
 
         Assert.AreEqual(expected, actual)
 
@@ -27,15 +27,15 @@ type TestClass () =
         let actual = 
             match run pclass attribute with 
             | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> Class (ClassAtt [])
+            | Failure(_, _, _) -> Class []
 
         let expected = 
-            Class (ClassAtt [ 
-                    ClassName "hs-home"
-                    ClassName "hs-content-id-10345721341"
-                    ClassName "hs-site-page"
-                    ClassName "page"
-                    ])
+            Class [ 
+                    "hs-home"
+                    "hs-content-id-10345721341"
+                    "hs-site-page"
+                    "page"
+                    ]
 
         Assert.AreEqual(expected, actual)
 
@@ -45,9 +45,9 @@ type TestClass () =
         let actual = 
             match run pid attribute with 
             | Success(result, _, _)   -> result 
-            | Failure(errorMsg, _, _) -> Id (IdAtt "")
+            | Failure(errorMsg, _, _) -> Id ""
 
-        let expected = Id (IdAtt "hs_cos_wrapper_module_154623948344039")
+        let expected = Id "hs_cos_wrapper_module_154623948344039"
 
         Assert.AreEqual(expected, actual)
 
@@ -57,8 +57,8 @@ type TestClass () =
         let actual = 
             match run ptitle attribute with 
             | Success(result, _, _)   -> result 
-            | Failure(errorMsg, _, _) -> Title (TitleAtt "")
+            | Failure(errorMsg, _, _) -> Title ""
 
-        let expected = Title (TitleAtt "Download the Case Study")
+        let expected = Title "Download the Case Study"
 
         Assert.AreEqual(expected, actual)
