@@ -3,35 +3,21 @@
 open FParsec
 open HtmlParser.Types
 
-// class attributes
-let pclassattribute : Parser<_> =
-    pstring "class=\""
+let pvalue : Parser<_> = 
+    many1Satisfy (fun c -> isAnyOf "_ \n,./?;:|!@#$%^&*()+=-" c || isLetter c || isDigit c)
 
-let pclasscontent : Parser<_> =
+let pvalueidentifier : Parser<_> = 
     many1Satisfy (fun c -> isAnyOf "_-" c || isLetter c || isDigit c) .>> spaces
 
-let pclass : Parser<_> = 
-    pclassattribute >>. many1 pclasscontent .>> pstring "\"" .>> spaces |>> Class
+let pattribute name value constr : Parser<_> = 
+    pstring (name + "=\"") >>. value .>> pstring "\"" .>> spaces |>> constr
 
-// id attribute
-let pidattribute : Parser<_> =
-    pstring "id=\""
+// attrubutes
+let pclass : Parser<_> = pattribute "class" (many1 pvalueidentifier) Class
 
-let pidcontent : Parser<_> = 
-    many1Satisfy (fun c -> isAnyOf "_-" c || isLetter c || isDigit c) .>> spaces
+let pid : Parser<_> = pattribute "id" pvalueidentifier Id
 
-let pid : Parser<_> =
-    pidattribute >>. pidcontent .>> pstring "\"" .>> spaces |>> Id
-
-// title attribute
-let ptitleattribute : Parser<_> =
-    pstring "title=\""
-
-let ptitlecontent : Parser<_> =
-    many1Satisfy (fun c -> isAnyOf "_ \n" c || isLetter c || isDigit c)
-
-let ptitle : Parser<_> =
-    ptitleattribute >>. ptitlecontent .>> pstring "\"" .>> spaces |>> Title
+let ptitle : Parser<_> = pattribute "title" pvalue Title
 
 let pglobals : Parser<_> =
     choice [pclass; pid; ptitle]
