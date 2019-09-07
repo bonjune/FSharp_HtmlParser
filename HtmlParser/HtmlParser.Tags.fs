@@ -13,7 +13,7 @@ let tagConstructor constr a t _ = constr { Attributes = a; Content = t }
 
 let ptag name attr constr : Parser<_> =
     pipe3 (pstring ("<" + name) >>. spaces >>. (many attr) .>> pstring ">")
-          (ptags <|> pcontent)
+          (pcontent <|> ptags)
           (pstring ("</" + name + ">"))
           (tagConstructor constr)
 
@@ -21,9 +21,24 @@ let ptag name attr constr : Parser<_> =
 let pglobalattr : Parser<_> =
     choice [pclass; pid; ptitle]
 
+let pdivattr : Parser<_> =
+    choice [pclass; pid; ptitle; paria]
+
+let patagattr : Parser<_> =
+    choice [pclass; pid; ptitle; phref; prole]
+
+let pliattr : Parser<_> =
+    choice [pclass; pid; ptitle; pvalue; prole]
+
 // tags
-let pbody : Parser<TagContent> = ptag "body" pglobalattr Body
+let pbody : Parser<_> = ptag "body" pglobalattr Body
 
-let pdiv : Parser<_> = ptag "div" pglobalattr Div
+let pdiv : Parser<_> = ptag "div" pdivattr Div
 
-do ptagsRef := many (choice [pbody; pdiv;])
+let patag : Parser<_> = ptag "a" patagattr ATag
+
+let pul : Parser<_> = ptag "ul" pglobalattr Ul
+
+let pli : Parser<_> = ptag "li" pliattr Li
+
+do ptagsRef := many (choice [pbody; pdiv; patag; pul; pli;])

@@ -106,4 +106,70 @@ type TestClass () =
 
         Assert.AreEqual(expected, actual)
 
+    [<Test>]
+    member this.ItShouldParseDivWithTextContent() =
+        let tag = "<div>Content</div>"
+        let actual = test pdiv tag (tagErr Div)
+        let expected =
+            Div {
+                Attributes = []
+                Content = [Content "Content"]
+            }
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseATag() =
+        let tag = "<a id=\"cta_button_4021173_27313a4a-55fc-45c6-8a64-a6e216314352\" class=\"cta_button \" href=\"https://www.callibrity.com\" title=\"Download the Case Study\">Download the Case Study</a>"
+        let actual = test patag tag (tagErr ATag)
+        let expected =
+            ATag {
+                Attributes = [
+                    Id "cta_button_4021173_27313a4a-55fc-45c6-8a64-a6e216314352";
+                    Class ["cta_button"];
+                    Href "https://www.callibrity.com";
+                    Title "Download the Case Study"
+                ]
+                Content = [Content "Download the Case Study"]
+            }
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>] 
+    member this.ItShouldParseUlTagWithLiTags() =
+        let tag = "<ul><li class=\"hs-menu-item hs-menu-depth-1\"><a href=\"https://www.callibrity.com/strategies/agile/\" role=\"menuitem\">Agile</a></li>" +
+                    "<li class=\"hs-menu-item hs-menu-depth-1\"><a href=\"https://www.callibrity.com/strategies/cloud\" role=\"menuitem\">Cloud</a></li></ul>"
+        let actual = test pul tag (tagErr Ul)
+        let aOne = 
+            ATag {
+                Attributes = [
+                    Href "https://www.callibrity.com/strategies/agile/";
+                    Role ["menuitem"]
+                ]
+                Content = [Content "Agile"]}
+        let liOne = 
+            Li {
+                Attributes = [Class ["hs-menu-item"; "hs-menu-depth-1"]]
+                Content = [aOne]
+            }
+        let aTwo = 
+            ATag {
+                Attributes = [
+                    Href "https://www.callibrity.com/strategies/cloud";
+                    Role ["menuitem"]
+                ]
+                Content = [Content "Cloud"]}
+        let liTwo = 
+            Li {
+                Attributes = [Class ["hs-menu-item"; "hs-menu-depth-1"]]
+                Content = [aTwo]
+            }
+        let expected =
+            Ul {
+                Attributes = []
+                Content = [liOne; liTwo]
+            }
+
+        Assert.AreEqual(expected, actual)
+                    
 

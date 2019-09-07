@@ -15,11 +15,18 @@ type Attributes =
     | Width of float
     | Height of float
     | Data of string * string
+    | Role of string list
+    | Aria of string * string 
+    | Value of string 
+    | Type of string 
 
 type TagContent = 
     | Content of string
     | Body of Tag
     | Div of Tag
+    | ATag of Tag
+    | Ul of Tag 
+    | Li of Tag 
 
 and Tag = {
     Attributes : Attributes list

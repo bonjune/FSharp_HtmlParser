@@ -66,3 +66,35 @@ type TestClass () =
         let expected = Href "https://www.callibrity.com/strategies/agile/"
 
         Assert.AreEqual(expected, actual)
+
+    [<Test>] 
+    member this.ItShouldParseRoleAttribute() =
+        let attribute = "role=\"menuitem menu navigation button\""
+        let actual = test prole attribute (Role [])
+        let expected = Role ["menuitem"; "menu"; "navigation"; "button"]
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>] 
+    member this.ItShouldParseAriaAttribute() =
+        let attribute = "aria-label=\"Previous Slide\""
+        let actual = test paria attribute (Aria ("", ""))
+        let expected = Aria ("aria-label", "Previous Slide")
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseValueAttribute() =
+        let attribute = "value=\"true\""
+        let actual = test pvalue attribute (Value "")
+        let expected = Value "true"
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>] 
+    member this.ItShouldParseTypeAttribute() =
+        let attribute = "type=\"text/javascript\""
+        let actual = test ptype attribute (Type "")
+        let expected = Type "text/javascript"
+
+        Assert.AreEqual(expected, actual)
