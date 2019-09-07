@@ -18,7 +18,4 @@ let pclass : Parser<_> = pattribute "class" (many1 pvalueidentifier) Class
 let pid : Parser<_> = pattribute "id" pvalueidentifier Id
 
 let ptitle : Parser<_> = pattribute "title" pvalue Title
-
-let pglobals : Parser<_> =
-    choice [pclass; pid; ptitle]
     

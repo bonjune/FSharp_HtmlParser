@@ -15,11 +15,12 @@ type Attributes =
     | Width of float
     | Height of float
 
-type HtmlTags = 
-    | HtmlBody of Tag
-    | HtmlDiv of Tag
+type TagContent = 
+    | Content of string
+    | Body of Tag
+    | Div of Tag
 
 and Tag = {
     Attributes : Attributes list
-    Tags : HtmlTags list
+    Content : TagContent list
     }

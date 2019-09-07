@@ -16,14 +16,14 @@ type TestClass () =
         let actual =
             match run pbody body with
             | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> HtmlBody { Attributes = []; Tags = [] }
+            | Failure(_, _, _) -> Body { Attributes = []; Content = [] }
 
         let expected = 
-            HtmlBody { 
+            Body { 
                 Attributes = [
                     Class ["hs-home"]
                     ];
-                Tags = [] 
+                Content = [] 
             }
 
         Assert.AreEqual(expected, actual)
@@ -34,15 +34,15 @@ type TestClass () =
         let actual =
             match run pbody body with
             | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> HtmlBody { Attributes = []; Tags = [] }
+            | Failure(_, _, _) -> Body { Attributes = []; Content = [] }
 
         let expected = 
-            HtmlBody { 
+            Body { 
                 Attributes = [
                     Class ["hs-home"] 
                     Id "hs_cos_wrapper_module_154623948344039"
                     ]; 
-                Tags = [] 
+                Content = [] 
             }
 
         Assert.AreEqual(expected, actual)
@@ -53,10 +53,10 @@ type TestClass () =
         let actual =
             match run pbody body with
             | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> HtmlBody { Attributes = []; Tags = [] }
+            | Failure(_, _, _) -> Body { Attributes = []; Content = [] }
 
         let expected = 
-            HtmlBody { 
+            Body { 
                 Attributes = [
                     Title "Download the Case Study"
                     Class [
@@ -67,7 +67,7 @@ type TestClass () =
                         ]
                     Id "hs_cos_wrapper_module_154623948344039"
                 ]; 
-                Tags = [] 
+                Content = [] 
             }
 
         Assert.AreEqual(expected, actual)
@@ -78,12 +78,12 @@ type TestClass () =
         let actual =
             match run pdiv div with
             | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> HtmlDiv { Attributes = []; Tags = [] }
+            | Failure(_, _, _) -> Div { Attributes = []; Content = [] }
 
         let expected = 
-            HtmlDiv { 
+            Div { 
                 Attributes = [ Class ["row-fluid"] ]; 
-                Tags = [] 
+                Content = [] 
             }
 
         Assert.AreEqual(expected, actual)
@@ -94,15 +94,15 @@ type TestClass () =
         let actual =
             match run pdiv divs with
             | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> HtmlDiv { Attributes = []; Tags = [] }
+            | Failure(_, _, _) -> Div { Attributes = []; Content = [] }
 
         let expected =
-            HtmlDiv {
+            Div {
                 Attributes = []
-                Tags = [
-                    HtmlDiv {
+                Content = [
+                    Div {
                         Attributes = []
-                        Tags = []
+                        Content = []
                         }
                     ]
                 }
@@ -115,15 +115,15 @@ type TestClass () =
         let actual =
             match run pbody tags with
             | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> HtmlBody { Attributes = []; Tags = [] }
+            | Failure(_, _, _) -> Body { Attributes = []; Content = [] }
 
         let expected =
-            HtmlBody {
+            Body {
                 Attributes = []
-                Tags = [
-                    HtmlDiv {
+                Content = [
+                    Div {
                         Attributes = []
-                        Tags = []
+                        Content = []
                         }
                     ]
                 }
