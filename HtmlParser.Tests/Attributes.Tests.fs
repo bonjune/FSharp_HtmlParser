@@ -24,11 +24,7 @@ type TestClass () =
     [<Test>]
     member this.ItShouldParseClassAttributeWithThreeClassNames () =
         let attribute = "class=\"hs-home   hs-content-id-10345721341 hs-site-page page \""
-        let actual = 
-            match run pclass attribute with 
-            | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> Class []
-
+        let actual = test pclass attribute (Class [])
         let expected = 
             Class [ 
                     "hs-home"
@@ -42,11 +38,7 @@ type TestClass () =
     [<Test>]
     member this.ItShouldParseIdAttribute () =
         let attribute = "id=\"hs_cos_wrapper_module_154623948344039\""
-        let actual = 
-            match run pid attribute with 
-            | Success(result, _, _)   -> result 
-            | Failure(errorMsg, _, _) -> Id ""
-
+        let actual = test pid attribute (Id "")
         let expected = Id "hs_cos_wrapper_module_154623948344039"
 
         Assert.AreEqual(expected, actual)
@@ -54,11 +46,23 @@ type TestClass () =
     [<Test>]
     member this.ItShouldParseTitleAttribute() =
         let attribute = "title=\"Download the Case Study\""
-        let actual = 
-            match run ptitle attribute with 
-            | Success(result, _, _)   -> result 
-            | Failure(errorMsg, _, _) -> Title ""
-
+        let actual = test ptitle attribute (Title "")
         let expected = Title "Download the Case Study"
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseDataAttribute() =
+        let attribute = "data-widget-type=\"custom_widget\""
+        let actual = test pdata attribute (Data ("", ""))
+        let expected = Data ("data-widget-type", "custom_widget")
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseHrefAttribute() =
+        let attribute = "href=\"https://www.callibrity.com/strategies/agile/\""
+        let actual = test phref attribute (Href "")
+        let expected = Href "https://www.callibrity.com/strategies/agile/"
 
         Assert.AreEqual(expected, actual)

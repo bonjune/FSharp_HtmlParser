@@ -12,12 +12,8 @@ type TestClass () =
 
     [<Test>]
     member this.ItShouldParseBodyTagWithClassAttribute () =
-        let body = "<body class=\"hs-home\"></body>"
-        let actual =
-            match run pbody body with
-            | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> Body { Attributes = []; Content = [] }
-
+        let tag = "<body class=\"hs-home\"></body>"
+        let actual = test pbody tag (tagErr Body)
         let expected = 
             Body { 
                 Attributes = [
@@ -30,12 +26,8 @@ type TestClass () =
 
     [<Test>]
     member this.ItShouldParseBodyTagWithClassAndIdAttributes () =
-        let body = "<body class=\"hs-home\" id=\"hs_cos_wrapper_module_154623948344039\"></body>"
-        let actual =
-            match run pbody body with
-            | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> Body { Attributes = []; Content = [] }
-
+        let tag = "<body class=\"hs-home\" id=\"hs_cos_wrapper_module_154623948344039\"></body>"
+        let actual = test pbody tag (tagErr Body)
         let expected = 
             Body { 
                 Attributes = [
@@ -49,12 +41,8 @@ type TestClass () =
 
     [<Test>]
     member this.ItShouldParseBodyTagWithClassAndIdAndTitleAttributes () =
-        let body = "<body title=\"Download the Case Study\" class=\"hs-home   hs-content-id-10345721341 hs-site-page page \" id=\"hs_cos_wrapper_module_154623948344039\"></body>"
-        let actual =
-            match run pbody body with
-            | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> Body { Attributes = []; Content = [] }
-
+        let tag = "<body title=\"Download the Case Study\" class=\"hs-home   hs-content-id-10345721341 hs-site-page page \" id=\"hs_cos_wrapper_module_154623948344039\"></body>"
+        let actual = test pbody tag (tagErr Body)
         let expected = 
             Body { 
                 Attributes = [
@@ -74,12 +62,8 @@ type TestClass () =
 
     [<Test>]
     member this.ItShouldParseDivTagWithClassAttribute() =
-        let div = "<div class=\"row-fluid \"></div>"
-        let actual =
-            match run pdiv div with
-            | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> Div { Attributes = []; Content = [] }
-
+        let tag = "<div class=\"row-fluid \"></div>"
+        let actual = test pdiv tag (tagErr Div)
         let expected = 
             Div { 
                 Attributes = [ Class ["row-fluid"] ]; 
@@ -90,12 +74,8 @@ type TestClass () =
 
     [<Test>] 
     member this.ItShouldParseNestedDivTags() =
-        let divs = "<div><div></div></div>"
-        let actual =
-            match run pdiv divs with
-            | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> Div { Attributes = []; Content = [] }
-
+        let tags = "<div><div></div></div>"
+        let actual = test pdiv tags (tagErr Div)
         let expected =
             Div {
                 Attributes = []
@@ -112,11 +92,7 @@ type TestClass () =
     [<Test>] 
     member this.ItShouldParseDivTagInsideBodyTag() =
         let tags = "<body><div></div></body>"
-        let actual =
-            match run pbody tags with
-            | Success(result, _, _)   -> result 
-            | Failure(_, _, _) -> Body { Attributes = []; Content = [] }
-
+        let actual = test pbody tags (tagErr Body)
         let expected =
             Body {
                 Attributes = []

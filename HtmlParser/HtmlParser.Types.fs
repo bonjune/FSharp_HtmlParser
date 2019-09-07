@@ -14,6 +14,7 @@ type Attributes =
     | Alt of string
     | Width of float
     | Height of float
+    | Data of string * string
 
 type TagContent = 
     | Content of string
