@@ -11,3 +11,6 @@ let test p str err =
 let tag : Tag = { Attributes = []; Content = [] }
 let tagErr constr = constr tag
 
+let sctag : ScTag = { Attributes = [] }
+let scTagErr constr = constr sctag
+

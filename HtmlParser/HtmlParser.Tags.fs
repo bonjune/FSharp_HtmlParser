@@ -17,28 +17,67 @@ let ptag name attr constr : Parser<_> =
           (pstring ("</" + name + ">"))
           (tagConstructor constr)
 
+let scTagConstructor constr a = constr { Attributes = a }
+
+let psctag name attr constr : Parser<_> =
+    pstring ("<" + name) >>. spaces >>. (many attr) .>> pstring "/>" |>> scTagConstructor constr
+
 // attribute choices
-let pglobalattr : Parser<_> =
-    choice [pclass; pid; ptitle]
 
-let pdivattr : Parser<_> =
-    choice [pclass; pid; ptitle; paria]
+let globalAttributes = [pclass; pid; ptitle]
 
-let patagattr : Parser<_> =
-    choice [pclass; pid; ptitle; phref; prole]
+let pglobalattr =
+    choice globalAttributes
 
-let pliattr : Parser<_> =
-    choice [pclass; pid; ptitle; pvalue; prole]
+let pdivattr =
+    [paria] |> List.append globalAttributes |> choice
+
+let patagattr =
+    [phref; prole] |> List.append globalAttributes |> choice
+
+let pliattr =
+    [pvalue; prole] |> List.append globalAttributes |> choice
+
+let psourceattr =
+    [psrc; ptype] |> List.append globalAttributes |> choice
+
+let pvideoattr =
+    [pautoplay; ploop; pmuted; ppreload] |> List.append globalAttributes |> choice 
+
+let pimgattr =
+    [palt; pheight; pwidth; psrc] |> List.append globalAttributes |> choice
 
 // tags
-let pbody : Parser<_> = ptag "body" pglobalattr Body
+let pbody = ptag "body" pglobalattr Body
 
-let pdiv : Parser<_> = ptag "div" pdivattr Div
+let pdiv = ptag "div" pdivattr Div
 
-let patag : Parser<_> = ptag "a" patagattr ATag
+let patag = ptag "a" patagattr ATag
 
-let pul : Parser<_> = ptag "ul" pglobalattr Ul
+let pul = ptag "ul" pglobalattr Ul
 
-let pli : Parser<_> = ptag "li" pliattr Li
+let pli = ptag "li" pliattr Li
 
-do ptagsRef := many (choice [pbody; pdiv; patag; pul; pli;])
+let psource = psctag "source" psourceattr Source
+
+let pvideo = ptag "video" pvideoattr Video
+
+let pimg = psctag "img" pimgattr Img
+
+let ph1 = ptag "h1" pglobalattr H1
+
+let ph2 = ptag "h2" pglobalattr H2
+
+let ph3 = ptag "h3" pglobalattr H3
+
+let ph4 = ptag "h4" pglobalattr H4
+
+let ph5 = ptag "h5" pglobalattr H5
+
+let ph6 = ptag "h6" pglobalattr H6
+
+let pptag = ptag "p" pglobalattr PTag
+
+let tagParsers = [pbody; pdiv; patag; pul; pli; psource; pvideo; pimg; ph1; ph2; ph3; ph4; ph5; ph6; pptag]
+
+do ptagsRef := tagParsers |> choice |> many

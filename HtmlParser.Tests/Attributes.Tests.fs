@@ -98,3 +98,75 @@ type TestClass () =
         let expected = Type "text/javascript"
 
         Assert.AreEqual(expected, actual)
+
+    [<Test>] 
+    member this.ItShouldParseAutoplayAttribute() =
+        let attribute = "autoplay=\"false\""
+        let actual = test pautoplay attribute (Autoplay "")
+        let expected = Autoplay "false"
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>] 
+    member this.ItShouldParseLoopAttribute() =
+        let attribute = "loop=\"true\""
+        let actual = test ploop attribute (Loop "")
+        let expected = Loop "true"
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>] 
+    member this.ItShouldParseMutedAttribute() =
+        let attribute = "muted=\"true\""
+        let actual = test pmuted attribute (Muted "")
+        let expected = Muted "true"
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>] 
+    member this.ItShouldParsePreloadAttribute() =
+        let attribute = "preload=\"auto\""
+        let actual = test ppreload attribute (Preload "")
+        let expected = Preload "auto"
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>] 
+    member this.ItShouldParseEmptyPreloadAttribute() =
+        let attribute = "preload=\"\""
+        let actual = test ppreload attribute (Preload "")
+        let expected = Preload "auto"
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>] 
+    member this.ItShouldParseSrcAttribute() =
+        let attribute = "src=\"https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4\""
+        let actual = test psrc attribute (Src "")
+        let expected = Src "https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4"
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseAltAttribute() =
+        let attribute = "alt=\"Founded by Developers for Developers\""
+        let actual = test palt attribute (Alt "")
+        let expected = Alt "Founded by Developers for Developers"
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseHeightAttribute() =
+        let attribute = "height=\"736\""
+        let actual = test pheight attribute (Height "")
+        let expected = Height "736"
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseWidthAttribute() =
+        let attribute = "width=\"1280\""
+        let actual = test pwidth attribute (Width "")
+        let expected = Width "1280"
+
+        Assert.AreEqual(expected, actual)

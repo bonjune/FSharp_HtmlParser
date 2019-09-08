@@ -171,5 +171,93 @@ type TestClass () =
             }
 
         Assert.AreEqual(expected, actual)
-                    
 
+    [<Test>]
+    member this.ItShouldParseSourceTag() =
+        let tag = "<source src=\"https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4\" type=\"video/mp4\"/>"
+        let actual = test psource tag (scTagErr Source)
+
+        let srcAttr = Src "https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4"
+        let typeAttr = Type "video/mp4"
+        let expected =
+            Source { Attributes = [srcAttr; typeAttr] }
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseVideoTag() =
+        let tag = "<video id=\"bg-video\" class=\"hidden-phone img-responsive\" autoplay=\"\" loop=\"\" muted=\"\" preload=\"metadata\">" +
+                    "<source src=\"https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4\" type=\"video/mp4\"/></video>"
+        let actual = test pvideo tag (tagErr Video)
+
+        let srcAttr = Src "https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4"
+        let typeAttr = Type "video/mp4"
+        let srcTag =
+            Source { Attributes = [srcAttr; typeAttr] }
+        let expected =
+            Video {
+                Attributes = [
+                    Id "bg-video"
+                    Class ["hidden-phone"; "img-responsive"] 
+                    Autoplay "" 
+                    Loop ""
+                    Muted "" 
+                    Preload "metadata" 
+                ]
+                Content = [srcTag]
+            }
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseImgTag() =
+        let tag = "<img class=\"visible-phone\" src=\"https://www.callibrity.com/hs-fs/hubfs/vlcsnap-error357.png?width=1280&amp;height=736&amp;name=vlcsnap-error357.png\" alt=\"Founded by Developers for Developers\" width=\"1280\" height=\"736\"/>"
+        let actual = test pimg tag (scTagErr Img)
+        let expected =
+            Img {
+                Attributes = [
+                    Class ["visible-phone"]
+                    Src "https://www.callibrity.com/hs-fs/hubfs/vlcsnap-error357.png?width=1280&amp;height=736&amp;name=vlcsnap-error357.png"
+                    Alt "Founded by Developers for Developers"
+                    Width "1280"
+                    Height "736"
+                ]
+            }
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseH1Tag() =
+        let tag = "<h1>True software craftsmanship, real business results</h1>"
+        let actual = test ph1 tag (tagErr H1)
+        let expected =
+            H1 {
+                Attributes = []
+                Content = [Content "True software craftsmanship, real business results"]
+            }
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseH2Tag() =
+        let tag = "<h2>Outperform financially</h2>"
+        let actual = test ph2 tag (tagErr H2)
+        let expected =
+            H2 {
+                Attributes = []
+                Content = [Content "Outperform financially"]
+            }
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParsePTag() =
+        let tag = "<p>When growing your business, being first matters. Speed to market + agility = peak financial performance.</p>"
+        let actual = test pptag tag (tagErr PTag)
+        let expected =
+            PTag {
+                Attributes = []
+                Content = [Content "When growing your business, being first matters. Speed to market + agility = peak financial performance."]
+            }
+
+        Assert.AreEqual(expected, actual)
