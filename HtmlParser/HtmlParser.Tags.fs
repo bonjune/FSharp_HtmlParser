@@ -22,7 +22,8 @@ let scTagConstructor constr a = constr { Attributes = a }
 let psctag name attr constr : Parser<_> =
     pstring ("<" + name) >>. spaces >>. (many attr) .>> pstring "/>" |>> scTagConstructor constr
 
-// attribute choices
+
+// attribute options
 
 let globalAttributes = [pclass; pid; ptitle]
 
@@ -47,7 +48,8 @@ let pvideoattr =
 let pimgattr =
     [palt; pheight; pwidth; psrc] |> List.append globalAttributes |> choice
 
-// tags
+
+// tag parsers
 let pbody = ptag "body" pglobalattr Body
 
 let pdiv = ptag "div" pdivattr Div

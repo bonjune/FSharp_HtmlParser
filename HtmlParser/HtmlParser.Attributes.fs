@@ -3,6 +3,11 @@
 open FParsec
 open HtmlParser.Types
 
+let pattribute name value constr : Parser<_> = 
+    name >>. value .>> pstring "\"" .>> spaces |>> constr
+
+
+// attribute parser helpers
 let mapPstringChoice : (string list -> Parser<_>) = choice << (List.map pstring)
 
 let pcontentvalue : Parser<_> = 
@@ -46,10 +51,8 @@ let pariavalue : Parser<_> =
 let parianame : Parser<_> = 
     pipe2 (pstring "aria-") (pariavalue .>> pstring "=\"") (fun a i -> a + i)
 
-let pattribute name value constr : Parser<_> = 
-    name >>. value .>> pstring "\"" .>> spaces |>> constr
 
-// attrubutes
+// attribute parsers
 let pclass = pattribute (pattrname "class") (many1 pidentifiervalue) Class
 
 let pid = pattribute (pattrname "id") pidentifiervalue Id
