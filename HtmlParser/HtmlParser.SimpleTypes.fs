@@ -22,15 +22,24 @@ type DataAttribute = {
     Content : string 
     }
 
-type ImageHeight = ImageHeight of float
-
-type ImageWidth = ImageWidth of float
-
 type HrefAttribute = HrefAttribute of string
 
 type IdAttribute = IdAttribute of string
 
+type ImageHeight = ImageHeight of float
+
+type ImageWidth = ImageWidth of float
+
 type LoopAttribute = LoopAttribute of bool option
+
+type MediaConditional =
+    | MaxWidth
+    | MinWidth
+
+type MediaCondition = {
+    Condition : MediaConditional
+    Size : float
+    }
 
 type MutedAttribute = MutedAttribute of bool option
 
@@ -38,14 +47,9 @@ type PreloadAttribute = PreloadAttribute of string
 
 type RoleAttribute = RoleAttribute of string
 
-type MediaCondition = {
-    Condition : string
-    Size : float
-    }
-
 type SizesAttribute = {
     Media : MediaCondition
-    Width : ImageWidth
+    Widths : ImageWidth list
     }
 
 type SrcAttribute = SrcAttribute of string
@@ -67,9 +71,6 @@ type SrcSetAttribute = {
 type TitleAttribute = TitleAttribute of string
 
 type TypeAttribute = TypeAttribute of string
-
-type AttributeError =
-    | ClassError of string
 
 module ClassAttribute =
     

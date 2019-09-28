@@ -10,9 +10,9 @@ let test p str =
     | Success(result, _, _)   -> printfn "Success: %A" result 
     | Failure(errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
-let attribute = "height=\"736\""
+let attribute = "sizes=\"(max-width: 162px) 100vw, 162px\""
 
 [<EntryPoint>]
 let main argv =
-    test pheight attribute
+    test psizes attribute
     0 // return an integer exit code

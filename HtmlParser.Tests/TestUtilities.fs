@@ -3,14 +3,13 @@
 open FParsec
 open HtmlParser.Types
 
-let test p str err =
+let attributeTest p str =
     match run p str with 
     | Success(result, _, _)   -> result 
-    | _ -> err
+    | _ -> AttributeError
 
-let tag : Element = { Attributes = []; Content = [] }
-let tagErr constr = constr tag
-
-let sctag : ScElement = { Attributes = [] }
-let scTagErr constr = constr sctag
+let elementTest p str =
+    match run p str with 
+    | Success(result, _, _)   -> result 
+    | _ -> ElementError
 

@@ -24,6 +24,7 @@ type Attributes =
     | ValueFloat of float
     | ValueBool of bool
     | Width of ImageWidth
+    | AttributeError
 
 type ElementContent = 
     | AElement of Element
@@ -42,6 +43,7 @@ type ElementContent =
     | Source of ScElement
     | Ul of Element 
     | Video of Element
+    | ElementError
 
 and Element = {
     Attributes : Attributes list
