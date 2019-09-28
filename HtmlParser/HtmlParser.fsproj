@@ -6,11 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Playground\parser_playground.fs" />
-    <Compile Include="Playground\JsonParser.fs" />
-    <Compile Include="HtmlParser.Types.fs" />
+    <Compile Include="HtmlParser.SimpleTypes.fs" />
+    <Compile Include="HtmlParser.CompoundTypes.fs" />
     <Compile Include="HtmlParser.Attributes.fs" />
-    <Compile Include="HtmlParser.Tags.fs" />
+    <Compile Include="HtmlParser.Elements.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

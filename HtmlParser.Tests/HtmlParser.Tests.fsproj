@@ -15,7 +15,7 @@
   <ItemGroup>
     <Compile Include="TestUtilities.fs" />
     <Compile Include="Attributes.Tests.fs" />
-    <Compile Include="Tags.Tests.fs" />
+    <Compile Include="Elements.Tests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

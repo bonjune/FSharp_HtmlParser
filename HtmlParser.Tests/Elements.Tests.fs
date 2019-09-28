@@ -1,11 +1,11 @@
-﻿namespace HtmlParser.Tags.Tests
+﻿namespace HtmlParser.Elements.Tests
 
 open NUnit.Framework
 open FParsec
 open TestUtilities
 open HtmlParser.Types
 open Attributes
-open Tags
+open Elements
 
 [<TestFixture>]
 type TestClass () =
@@ -17,7 +17,7 @@ type TestClass () =
         let expected = 
             Body { 
                 Attributes = [
-                    Class ["hs-home"]
+                    Class [ ClassAttribute.create "hs-home"]
                     ];
                 Content = [] 
             }
@@ -31,8 +31,8 @@ type TestClass () =
         let expected = 
             Body { 
                 Attributes = [
-                    Class ["hs-home"] 
-                    Id "hs_cos_wrapper_module_154623948344039"
+                    Class [ClassAttribute.create "hs-home"] 
+                    Id (IdAttribute "hs_cos_wrapper_module_154623948344039")
                     ]; 
                 Content = [] 
             }
@@ -46,14 +46,14 @@ type TestClass () =
         let expected = 
             Body { 
                 Attributes = [
-                    Title "Download the Case Study"
+                    Title (TitleAttribute "Download the Case Study")
                     Class [
-                        "hs-home"
-                        "hs-content-id-10345721341"
-                        "hs-site-page"
-                        "page"
+                        ClassAttribute.create "hs-home"
+                        ClassAttribute.create "hs-content-id-10345721341"
+                        ClassAttribute.create "hs-site-page"
+                        ClassAttribute.create "page"
                         ]
-                    Id "hs_cos_wrapper_module_154623948344039"
+                    Id (IdAttribute "hs_cos_wrapper_module_154623948344039")
                 ]; 
                 Content = [] 
             }
@@ -66,7 +66,7 @@ type TestClass () =
         let actual = test pdiv tag (tagErr Div)
         let expected = 
             Div { 
-                Attributes = [ Class ["row-fluid"] ]; 
+                Attributes = [ Class [ClassAttribute.create "row-fluid"] ]; 
                 Content = [] 
             }
 
@@ -121,14 +121,14 @@ type TestClass () =
     [<Test>]
     member this.ItShouldParseATag() =
         let tag = "<a id=\"cta_button_4021173_27313a4a-55fc-45c6-8a64-a6e216314352\" class=\"cta_button \" href=\"https://www.callibrity.com\" title=\"Download the Case Study\">Download the Case Study</a>"
-        let actual = test patag tag (tagErr ATag)
+        let actual = test paelement tag (tagErr AElement)
         let expected =
-            ATag {
+            AElement {
                 Attributes = [
-                    Id "cta_button_4021173_27313a4a-55fc-45c6-8a64-a6e216314352";
-                    Class ["cta_button"];
-                    Href "https://www.callibrity.com";
-                    Title "Download the Case Study"
+                    Id (IdAttribute "cta_button_4021173_27313a4a-55fc-45c6-8a64-a6e216314352")
+                    Class [ClassAttribute.create "cta_button"]
+                    Href (HrefAttribute "https://www.callibrity.com")
+                    Title (TitleAttribute "Download the Case Study")
                 ]
                 Content = [Content "Download the Case Study"]
             }
@@ -141,27 +141,27 @@ type TestClass () =
                     "<li class=\"hs-menu-item hs-menu-depth-1\"><a href=\"https://www.callibrity.com/strategies/cloud\" role=\"menuitem\">Cloud</a></li></ul>"
         let actual = test pul tag (tagErr Ul)
         let aOne = 
-            ATag {
+            AElement {
                 Attributes = [
-                    Href "https://www.callibrity.com/strategies/agile/";
-                    Role ["menuitem"]
+                    Href (HrefAttribute "https://www.callibrity.com/strategies/agile/")
+                    Role [RoleAttribute "menuitem"]
                 ]
                 Content = [Content "Agile"]}
         let liOne = 
             Li {
-                Attributes = [Class ["hs-menu-item"; "hs-menu-depth-1"]]
+                Attributes = [Class [ClassAttribute.create "hs-menu-item"; ClassAttribute.create "hs-menu-depth-1"]]
                 Content = [aOne]
             }
         let aTwo = 
-            ATag {
+            AElement {
                 Attributes = [
-                    Href "https://www.callibrity.com/strategies/cloud";
-                    Role ["menuitem"]
+                    Href (HrefAttribute "https://www.callibrity.com/strategies/cloud")
+                    Role [RoleAttribute "menuitem"]
                 ]
                 Content = [Content "Cloud"]}
         let liTwo = 
             Li {
-                Attributes = [Class ["hs-menu-item"; "hs-menu-depth-1"]]
+                Attributes = [Class [ClassAttribute.create "hs-menu-item"; ClassAttribute.create "hs-menu-depth-1"]]
                 Content = [aTwo]
             }
         let expected =
@@ -177,8 +177,8 @@ type TestClass () =
         let tag = "<source src=\"https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4\" type=\"video/mp4\"/>"
         let actual = test psource tag (scTagErr Source)
 
-        let srcAttr = Src "https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4"
-        let typeAttr = Type "video/mp4"
+        let srcAttr = Src (SrcAttribute "https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4")
+        let typeAttr = Type (TypeAttribute "video/mp4")
         let expected =
             Source { Attributes = [srcAttr; typeAttr] }
 
@@ -190,19 +190,19 @@ type TestClass () =
                     "<source src=\"https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4\" type=\"video/mp4\"/></video>"
         let actual = test pvideo tag (tagErr Video)
 
-        let srcAttr = Src "https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4"
-        let typeAttr = Type "video/mp4"
+        let srcAttr = Src (SrcAttribute "https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4")
+        let typeAttr = Type (TypeAttribute "video/mp4")
         let srcTag =
             Source { Attributes = [srcAttr; typeAttr] }
         let expected =
             Video {
                 Attributes = [
-                    Id "bg-video"
-                    Class ["hidden-phone"; "img-responsive"] 
-                    Autoplay "" 
-                    Loop ""
-                    Muted "" 
-                    Preload "metadata" 
+                    Id (IdAttribute "bg-video")
+                    Class [ClassAttribute.create "hidden-phone"; ClassAttribute.create "img-responsive"] 
+                    Autoplay (AutoplayAttribute None )
+                    Loop (LoopAttribute None)
+                    Muted (MutedAttribute None)
+                    Preload (PreloadAttribute "metadata" )
                 ]
                 Content = [srcTag]
             }
@@ -216,11 +216,11 @@ type TestClass () =
         let expected =
             Img {
                 Attributes = [
-                    Class ["visible-phone"]
-                    Src "https://www.callibrity.com/hs-fs/hubfs/vlcsnap-error357.png?width=1280&amp;height=736&amp;name=vlcsnap-error357.png"
-                    Alt "Founded by Developers for Developers"
-                    Width "1280"
-                    Height "736"
+                    Class [ClassAttribute.create "visible-phone"]
+                    Src (SrcAttribute "https://www.callibrity.com/hs-fs/hubfs/vlcsnap-error357.png?width=1280&amp;height=736&amp;name=vlcsnap-error357.png")
+                    Alt (AltAttribute "Founded by Developers for Developers")
+                    Width (ImageWidth 1280.0)
+                    Height (ImageHeight 736.0)
                 ]
             }
 
@@ -253,9 +253,9 @@ type TestClass () =
     [<Test>]
     member this.ItShouldParsePTag() =
         let tag = "<p>When growing your business, being first matters. Speed to market + agility = peak financial performance.</p>"
-        let actual = test pptag tag (tagErr PTag)
+        let actual = test ppelement tag (tagErr PElement)
         let expected =
-            PTag {
+            PElement {
                 Attributes = []
                 Content = [Content "When growing your business, being first matters. Speed to market + agility = peak financial performance."]
             }

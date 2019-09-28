@@ -8,9 +8,9 @@ let test p str err =
     | Success(result, _, _)   -> result 
     | _ -> err
 
-let tag : Tag = { Attributes = []; Content = [] }
+let tag : Element = { Attributes = []; Content = [] }
 let tagErr constr = constr tag
 
-let sctag : ScTag = { Attributes = [] }
+let sctag : ScElement = { Attributes = [] }
 let scTagErr constr = constr sctag
 

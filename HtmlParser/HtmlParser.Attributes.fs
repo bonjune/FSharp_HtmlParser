@@ -3,18 +3,14 @@
 open FParsec
 open HtmlParser.Types
 
+// attribute parser helpers
 let pattribute name value constr : Parser<_> = 
     name >>. value .>> pstring "\"" .>> spaces |>> constr
 
-
-// attribute parser helpers
 let mapPstringChoice : (string list -> Parser<_>) = choice << (List.map pstring)
 
 let pcontentvalue : Parser<_> = 
     many1Satisfy (fun c -> isAnyOf "_ \n,./?;:|!@#$%^&*()+=-" c || isLetter c || isDigit c)
-
-let pnumbervalue : Parser<_> =
-    many1Satisfy isDigit
 
 let pidentifiervalue : Parser<_> = 
     many1Satisfy (fun c -> isAnyOf "_-" c || isLetter c || isDigit c) .>> spaces
@@ -32,7 +28,7 @@ let typeOptions = ["button"; "checkbox"; "color"; "datetime-local"; "date"; "ema
 let ptypevalue : Parser<_> =
     mapPstringChoice typeOptions
 
-let pbooleanvalue : Parser<_> = pstring "true" <|> pstring "false" <|> pstring ""
+let pbooleanvalue : Parser<_> = stringReturn "true" (Some true) <|> stringReturn "false" (Some false) <|> stringReturn "" None
 
 let purlvalue : Parser<_> =
     many1Satisfy (fun c -> isAnyOf "_,./?;:!@#$%^&*()+=-" c || isLetter c || isDigit c)
@@ -40,49 +36,63 @@ let purlvalue : Parser<_> =
 let purl : Parser<_> =
     pipe2 (mapPstringChoice ["http://"; "https://"; "#"; "/";]) purlvalue (fun h v -> h + v)
 
+let pfile : Parser<_> = 
+    pipe2 (many1Satisfy (fun c -> isAnyOf "_-" c || isLetter c || isDigit c))
+          (pchar '.' >>. many1Satisfy isLetter)
+          (fun n e -> ImageFile { Name = n; Extension = e })
+
 let pattrname name : Parser<_> = pstring (name + "=\"")
 
 let pdataname : Parser<_> = 
-    pipe2 (pstring "data-") (pidentifiervalue .>> pstring "=\"") (fun d i -> d + i)
+    pstring "data-" >>. pidentifiervalue .>> pstring "=\""
 
 let pariavalue : Parser<_> = 
     mapPstringChoice ["label"; "haspopup"; "expanded"; "valuemin"; "valuemax"; "valuenow"; ]
 
 let parianame : Parser<_> = 
-    pipe2 (pstring "aria-") (pariavalue .>> pstring "=\"") (fun a i -> a + i)
+    pstring "aria-" >>. pariavalue .>> pstring "=\""
 
+let psrcsetimage : Parser<_> =
+    pipe2 (spaces >>. (purl |>> (Url >> ImageUrl) <|> pfile) .>> spaces) (pfloat .>> pchar 'w' |>> ImageWidth) (fun i w -> { Src = i; Width = w })
 
 // attribute parsers
-let pclass = pattribute (pattrname "class") (many1 pidentifiervalue) Class
+let pclass = pattribute (pattrname "class") (many1 (pidentifiervalue |>> ClassAttribute.create)) Class
 
-let pid = pattribute (pattrname "id") pidentifiervalue Id
+let pid = pattribute (pattrname "id") pidentifiervalue (IdAttribute >> Id)
 
-let ptitle = pattribute (pattrname "title") pcontentvalue Title
+let ptitle = pattribute (pattrname "title") pcontentvalue (TitleAttribute >> Title)
 
-let pdata = tuple2 pdataname pcontentvalue .>> pstring "\"" .>> spaces |>> Data
+let pdata = pipe2 pdataname
+                  (pcontentvalue .>> pstring "\"" .>> spaces)
+                  (fun n c -> Data { Name = n; Content = c })
 
-let phref = pattribute (pattrname "href") purl Href
+let phref = pattribute (pattrname "href") purl (HrefAttribute >> Href)
 
-let prole = pattribute (pattrname "role") (many1 prolevalue) Role
+let prole = pattribute (pattrname "role") (many1 (prolevalue |>> RoleAttribute)) Role
    
-let paria = tuple2 parianame pcontentvalue .>> pstring "\"" .>> spaces |>> Aria 
+let paria = pipe2 parianame 
+                  (pcontentvalue .>> pstring "\"" .>> spaces)
+                  (fun n c -> Aria {Name = n; Content = c})
 
-let pvalue = pattribute (pattrname "value") pcontentvalue Value
+let pvalue' = (pfloat |>> ValueFloat <|> ((stringReturn "true" true <|> stringReturn "false" false) |>> ValueBool) <|> (pcontentvalue |>> ValueString))
+let pvalue = pattrname "value" >>. pvalue' .>> pstring "\"" .>> spaces
 
-let ptype = pattribute (pattrname "type") ptypevalue Type
+let ptype = pattribute (pattrname "type") ptypevalue (TypeAttribute >> Type)
 
-let pautoplay = pattribute (pattrname "autoplay") pbooleanvalue Autoplay
+let pautoplay = pattribute (pattrname "autoplay") pbooleanvalue (AutoplayAttribute >> Autoplay)
 
-let ploop = pattribute (pattrname "loop") pbooleanvalue Loop
+let ploop = pattribute (pattrname "loop") pbooleanvalue (LoopAttribute >> Loop)
 
-let pmuted = pattribute (pattrname "muted") pbooleanvalue Muted
+let pmuted = pattribute (pattrname "muted") pbooleanvalue (MutedAttribute >> Muted)
 
-let ppreload = pattribute (pattrname "preload") ppreloadvalue Preload
+let ppreload = pattribute (pattrname "preload") ppreloadvalue (PreloadAttribute >> Preload)
 
-let psrc = pattribute (pattrname "src") (purlvalue) Src
+let psrc = pattribute (pattrname "src") (purlvalue) (SrcAttribute >> Src)
 
-let palt = pattribute (pattrname "alt") pcontentvalue Alt
+let palt = pattribute (pattrname "alt") (pcontentvalue |>> AltAttribute) Alt
 
-let pheight = pattribute (pattrname "height") pnumbervalue Height
+let pheight = pattribute (pattrname "height") pfloat (ImageHeight >> Height)
 
-let pwidth = pattribute (pattrname "width") pnumbervalue Width
+let pwidth = pattribute (pattrname "width") pfloat (ImageWidth >> Width)
+
+let psrcset = pattribute (pattrname "srcset") (sepBy psrcsetimage (pchar ',')) SrcSet
