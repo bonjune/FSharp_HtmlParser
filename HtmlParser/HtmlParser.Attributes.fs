@@ -27,6 +27,9 @@ let pfile : Parser<_> =
           (pchar '.' >>. many1Satisfy isLetter)
           (fun n e -> ImageFile { Name = n; Extension = e })
 
+let phtmlcommentvalue : Parser<_> = 
+    many1Satisfy (fun c -> isAnyOf "_ \n,./?;:|!@#$%^&*()+=" c || isLetter c || isDigit c)
+
 let pidentifiervalue : Parser<_> = 
     many1Satisfy (fun c -> isAnyOf "_-" c || isLetter c || isDigit c) .>> spaces
 
@@ -101,6 +104,8 @@ let pwidthslot = pfloat .>> pmediawidth
 let psizes' = pipe2 (pmediacondition .>> spaces) (sepBy (pwidthslot |>> ImageWidth) (pchar ',' .>> spaces)) (fun m ws -> { Media = m; Widths = ws })
 
 let psizes = pattribute (pattrname "sizes") psizes' Sizes
+
+let pstyle = pattribute (pattrname "style") pcontentvalue (StyleAttribute >> Style)
 
 let ptitle = pattribute (pattrname "title") pcontentvalue (TitleAttribute >> Title)
 

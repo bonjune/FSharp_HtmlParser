@@ -54,6 +54,8 @@ type SizesAttribute = {
 
 type SrcAttribute = SrcAttribute of string
 
+type StyleAttribute = StyleAttribute of string
+
 type File = {
     Name : string
     Extension : string

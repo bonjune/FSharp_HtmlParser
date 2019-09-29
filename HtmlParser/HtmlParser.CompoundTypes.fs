@@ -18,6 +18,7 @@ type Attributes =
     | Sizes of SizesAttribute
     | Src of SrcAttribute
     | SrcSet of SrcSetAttribute list
+    | Style of StyleAttribute
     | Title of TitleAttribute
     | Type of TypeAttribute
     | ValueString of string
@@ -34,9 +35,10 @@ type ElementContent =
     | H1 of Element
     | H2 of Element 
     | H3 of Element 
-    | H4 of Element 
+    | H4 of Element
     | H5 of Element 
     | H6 of Element
+    | HtmlComment of string
     | Img of ScElement
     | Li of Element 
     | PElement of Element

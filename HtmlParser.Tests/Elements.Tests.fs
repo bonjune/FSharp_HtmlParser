@@ -11,7 +11,7 @@ open Elements
 type TestClass () =
 
     [<Test>]
-    member this.ItShouldParseBodyTagWithClassAttribute () =
+    member this.ItShouldParseBodyElementWithClassAttribute () =
         let element = "<body class=\"hs-home\"></body>"
         let actual = elementTest pbody element
         let expected = 
@@ -25,7 +25,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseBodyTagWithClassAndIdAttributes () =
+    member this.ItShouldParseBodyElementWithClassAndIdAttributes () =
         let element = "<body class=\"hs-home\" id=\"hs_cos_wrapper_module_154623948344039\"></body>"
         let actual = elementTest pbody element
         let expected = 
@@ -40,7 +40,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseBodyTagWithClassAndIdAndTitleAttributes () =
+    member this.ItShouldParseBodyElementWithClassAndIdAndTitleAttributes () =
         let element = "<body title=\"Download the Case Study\" class=\"hs-home   hs-content-id-10345721341 hs-site-page page \" id=\"hs_cos_wrapper_module_154623948344039\"></body>"
         let actual = elementTest pbody element
         let expected = 
@@ -61,7 +61,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseDivTagWithClassAttribute() =
+    member this.ItShouldParseDivElementWithClassAttribute () =
         let element = "<div class=\"row-fluid \"></div>"
         let actual = elementTest pdiv element
         let expected = 
@@ -73,7 +73,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>] 
-    member this.ItShouldParseNestedDivTags() =
+    member this.ItShouldParseNestedDivElements () =
         let elements = "<div><div></div></div>"
         let actual = elementTest pdiv elements
         let expected =
@@ -90,7 +90,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>] 
-    member this.ItShouldParseDivTagInsideBodyTag() =
+    member this.ItShouldParseDivElementInsideBodyElement () =
         let elements = "<body><div></div></body>"
         let actual = elementTest pbody elements
         let expected =
@@ -107,7 +107,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseDivWithTextContent() =
+    member this.ItShouldParseDivWithTextContent () =
         let element = "<div>Content</div>"
         let actual = elementTest pdiv element
         let expected =
@@ -119,7 +119,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseATag() =
+    member this.ItShouldParseAElement () =
         let element = "<a id=\"cta_button_4021173_27313a4a-55fc-45c6-8a64-a6e216314352\" class=\"cta_button \" href=\"https://www.callibrity.com\" title=\"Download the Case Study\">Download the Case Study</a>"
         let actual = elementTest paelement element
         let expected =
@@ -136,7 +136,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>] 
-    member this.ItShouldParseUlTagWithLiTags() =
+    member this.ItShouldParseUlElementWithLiElements () =
         let element = "<ul><li class=\"hs-menu-item hs-menu-depth-1\"><a href=\"https://www.callibrity.com/strategies/agile/\" role=\"menuitem\">Agile</a></li>" +
                       "<li class=\"hs-menu-item hs-menu-depth-1\"><a href=\"https://www.callibrity.com/strategies/cloud\" role=\"menuitem\">Cloud</a></li></ul>"
         let actual = elementTest pul element
@@ -173,7 +173,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseSourceTag() =
+    member this.ItShouldParseSourceElement () =
         let element = "<source src=\"https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4\" type=\"video/mp4\"/>"
         let actual = elementTest psource element
 
@@ -185,7 +185,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseVideoTag() =
+    member this.ItShouldParseVideoElement () =
         let element = "<video id=\"bg-video\" class=\"hidden-phone img-responsive\" autoplay=\"\" loop=\"\" muted=\"\" preload=\"metadata\">" +
                       "<source src=\"https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4\" type=\"video/mp4\"/></video>"
         let actual = elementTest pvideo element
@@ -210,7 +210,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseImgTag() =
+    member this.ItShouldParseImgElement () =
         let element = "<img class=\"visible-phone\" src=\"https://www.callibrity.com/hs-fs/hubfs/vlcsnap-error357.png?width=1280&amp;height=736&amp;name=vlcsnap-error357.png\" alt=\"Founded by Developers for Developers\" width=\"1280\" height=\"736\"/>"
         let actual = elementTest pimg element
         let expected =
@@ -227,7 +227,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseH1Tag() =
+    member this.ItShouldParseH1Element () =
         let element = "<h1>True software craftsmanship, real business results</h1>"
         let actual = elementTest ph1 element
         let expected =
@@ -239,7 +239,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseH2Tag() =
+    member this.ItShouldParseH2Element () =
         let element = "<h2>Outperform financially</h2>"
         let actual = elementTest ph2 element
         let expected =
@@ -251,7 +251,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParsePTag() =
+    member this.ItShouldParsePElement () =
         let element = "<p>When growing your business, being first matters. Speed to market + agility = peak financial performance.</p>"
         let actual = elementTest ppelement element
         let expected =
@@ -259,5 +259,44 @@ type TestClass () =
                 Attributes = []
                 Content = [Content "When growing your business, being first matters. Speed to market + agility = peak financial performance."]
             }
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseDivAndBodyElementsWithClassAttributes () =
+        let element = "<body class=\"hs-home   hs-content-id-10345721341 hs-site-page page \"><div class=\"header-container-wrapper\"></div></body>"
+        let actual =
+            match run pelements element with
+            | Success(ele, _, _) -> ele
+            | _ -> [ElementError]
+
+        let expected =
+            Body {
+                Attributes = [
+                    Class 
+                        [
+                        ClassAttribute.create "hs-home"
+                        ClassAttribute.create "hs-content-id-10345721341"
+                        ClassAttribute.create"hs-site-page"
+                        ClassAttribute.create "page"
+                        ]
+                    ]
+                Content = [
+                    Div {
+                            Attributes = [
+                                Class [ClassAttribute.create "header-container-wrapper"]
+                                ]
+                            Content = []
+                        }
+                    ]
+                }
+
+        Assert.AreEqual([expected], actual)
+
+    [<Test>]
+    member this.ItShouldParseHtmlComment () =
+        let comment = "<!-- start coded_template: id:10195510643 path:generated_global_groups/10195510642.html -->"
+        let actual = elementTest phtmlcomment comment 
+        let expected = HtmlComment "start coded_template: id:10195510643 path:generated_global_groups/10195510642.html"
 
         Assert.AreEqual(expected, actual)

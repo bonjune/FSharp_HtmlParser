@@ -1,5 +1,6 @@
 ﻿module Elements
 
+open System
 open FParsec
 open HtmlParser.Types
 open Attributes
@@ -14,7 +15,7 @@ let elementConstructor constr a t _ = constr { Attributes = a; Content = t }
 
 let pelement name attr constr : Parser<_> =
     pipe3 (pstring ("<" + name) >>. spaces >>. (many attr) .>> pstring ">")
-          (pcontent <|> pelements)
+          (spaces >>. (pcontent <|> pelements) .>> spaces)
           (pstring ("</" + name + ">"))
           (elementConstructor constr)
 
@@ -23,6 +24,7 @@ let scElementConstructor constr a = constr { Attributes = a }
 let pscelement name attr constr : Parser<_> =
     pstring ("<" + name) >>. spaces >>. (many attr) .>> pstring "/>" |>> scElementConstructor constr
 
+let trim (str : string) = str.Trim()
 
 // attribute options
 let globalAttributes = [pclass; pid; ptitle]
@@ -31,7 +33,7 @@ let pglobalattr =
     choice globalAttributes
 
 let pdivattr =
-    [paria] @ globalAttributes |> choice
+    [paria; pdata] @ globalAttributes |> choice
 
 let patagattr =
     [phref; prole] @ globalAttributes |> choice
@@ -48,23 +50,16 @@ let pvideoattr =
 let pimgattr =
     [palt; pheight; pwidth; psrc] @ globalAttributes |> choice
 
+// html comment
+let phtmlcomment' = between (pstring "<!--") (pstring "-->") phtmlcommentvalue |>> (trim >> HtmlComment)
+let phtmlcomment = spaces >>. phtmlcomment' .>> spaces
 
-// tag parsers
+// element parsers
+let paelement = pelement "a" patagattr AElement
+
 let pbody = pelement "body" pglobalattr Body
 
 let pdiv = pelement "div" pdivattr Div
-
-let paelement = pelement "a" patagattr AElement
-
-let pul = pelement "ul" pglobalattr Ul
-
-let pli = pelement "li" pliattr Li
-
-let psource = pscelement "source" psourceattr Source
-
-let pvideo = pelement "video" pvideoattr Video
-
-let pimg = pscelement "img" pimgattr Img
 
 let ph1 = pelement "h1" pglobalattr H1
 
@@ -78,8 +73,18 @@ let ph5 = pelement "h5" pglobalattr H5
 
 let ph6 = pelement "h6" pglobalattr H6
 
+let pimg = pscelement "img" pimgattr Img
+
+let pli = pelement "li" pliattr Li
+
 let ppelement = pelement "p" pglobalattr PElement
 
-let elementParsers = [pbody; pdiv; paelement; pul; pli; psource; pvideo; pimg; ph1; ph2; ph3; ph4; ph5; ph6; ppelement]
+let pul = pelement "ul" pglobalattr Ul
+
+let psource = pscelement "source" psourceattr Source
+
+let pvideo = pelement "video" pvideoattr Video
+
+let elementParsers = [pbody; pdiv; paelement; pul; pli; psource; pvideo; pimg; ph1; ph2; ph3; ph4; ph5; ph6; ppelement; phtmlcomment]
 
 do pelementsRef := elementParsers |> choice |> many

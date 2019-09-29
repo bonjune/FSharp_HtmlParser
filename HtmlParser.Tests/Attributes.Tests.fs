@@ -71,7 +71,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseTitleAttribute() =
+    member this.ItShouldParseTitleAttribute () =
         let attribute = "title=\"Download the Case Study\""
         let actual = attributeTest ptitle attribute
         let expected = Title (TitleAttribute "Download the Case Study")
@@ -79,7 +79,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseDataAttribute() =
+    member this.ItShouldParseDataAttribute () =
         let attribute = "data-widget-type=\"custom_widget\""
         let actual = attributeTest pdata attribute
         let expected = Data ({ Name = "widget-type"; Content = "custom_widget" })
@@ -87,7 +87,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseHrefAttribute() =
+    member this.ItShouldParseHrefAttribute () =
         let attribute = "href=\"https://www.callibrity.com/strategies/agile/\""
         let actual = attributeTest phref attribute
         let expected = Href (HrefAttribute "https://www.callibrity.com/strategies/agile/")
@@ -95,7 +95,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>] 
-    member this.ItShouldParseRoleAttribute() =
+    member this.ItShouldParseRoleAttribute () =
         let attribute = "role=\"menuitem menu navigation button\""
         let actual = attributeTest prole attribute
         let expected = 
@@ -109,7 +109,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>] 
-    member this.ItShouldParseAriaAttribute() =
+    member this.ItShouldParseAriaAttribute () =
         let attribute = "aria-label=\"Previous Slide\""
         let actual = attributeTest paria attribute
         let expected = Aria { Name = "label"; Content = "Previous Slide" }
@@ -117,7 +117,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseValueBoolAttribute() =
+    member this.ItShouldParseValueBoolAttribute () =
         let attribute = "value=\"true\""
         let actual = attributeTest pvalue attribute
         let expected = ValueBool true
@@ -125,7 +125,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseValueFloatAttribute() =
+    member this.ItShouldParseValueFloatAttribute () =
         let attribute = "value=\"17.5\""
         let actual = attributeTest pvalue attribute
         let expected = ValueFloat 17.5
@@ -133,7 +133,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseValueStringAttribute() =
+    member this.ItShouldParseValueStringAttribute () =
         let attribute = "value=\"some value\""
         let actual = attributeTest pvalue attribute
         let expected = ValueString "some value"
@@ -141,7 +141,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>] 
-    member this.ItShouldParseTypeAttribute() =
+    member this.ItShouldParseTypeAttribute () =
         let attribute = "type=\"text/javascript\""
         let actual = attributeTest ptype attribute
         let expected = Type (TypeAttribute "text/javascript")
@@ -149,7 +149,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>] 
-    member this.ItShouldParseAutoplayAttribute() =
+    member this.ItShouldParseAutoplayAttribute () =
         let attribute = "autoplay=\"false\""
         let actual = attributeTest pautoplay attribute
         let expected = Autoplay (AutoplayAttribute (Some false))
@@ -157,7 +157,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>] 
-    member this.ItShouldParseLoopAttribute() =
+    member this.ItShouldParseLoopAttribute () =
         let attribute = "loop=\"true\""
         let actual = attributeTest ploop attribute
         let expected = Loop (LoopAttribute (Some true))
@@ -165,7 +165,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>] 
-    member this.ItShouldParseMutedAttribute() =
+    member this.ItShouldParseMutedAttribute () =
         let attribute = "muted=\"true\""
         let actual = attributeTest pmuted attribute
         let expected = Muted (MutedAttribute (Some true))
@@ -173,7 +173,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>] 
-    member this.ItShouldParsePreloadAttribute() =
+    member this.ItShouldParsePreloadAttribute () =
         let attribute = "preload=\"auto\""
         let actual = attributeTest ppreload attribute
         let expected = Preload (PreloadAttribute "auto")
@@ -181,7 +181,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>] 
-    member this.ItShouldParseEmptyPreloadAttribute() =
+    member this.ItShouldParseEmptyPreloadAttribute () =
         let attribute = "preload=\"\""
         let actual = attributeTest ppreload attribute
         let expected = Preload (PreloadAttribute "auto")
@@ -189,7 +189,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>] 
-    member this.ItShouldParseSrcAttribute() =
+    member this.ItShouldParseSrcAttribute () =
         let attribute = "src=\"https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4\""
         let actual = attributeTest psrc attribute
         let expected = Src (SrcAttribute "https://cdn2.hubspot.net/hubfs/4021173/Callibrity_December2018%20Theme/Videos/callibrity-movie.mp4")
@@ -197,7 +197,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseAltAttribute() =
+    member this.ItShouldParseAltAttribute () =
         let attribute = "alt=\"Founded by Developers for Developers\""
         let actual = attributeTest palt attribute
         let expected = Alt (AltAttribute "Founded by Developers for Developers")
@@ -205,7 +205,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseHeightAttribute() =
+    member this.ItShouldParseHeightAttribute () =
         let attribute = "height=\"736\""
         let actual = attributeTest pheight attribute
         let expected = Height (ImageHeight 736.0)
@@ -213,7 +213,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseWidthAttribute() =
+    member this.ItShouldParseWidthAttribute () =
         let attribute = "width=\"1280\""
         let actual = attributeTest pwidth attribute
         let expected = Width (ImageWidth 1280.0)
@@ -221,7 +221,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>] 
-    member this.ItShouldParseSrcSetAttribute() =
+    member this.ItShouldParseSrcSetAttribute () =
         let attribute = 
             "srcset=\"
             image1.png    640w,
@@ -249,7 +249,7 @@ type TestClass () =
         Assert.AreEqual(expected, actual)
 
     [<Test>]
-    member this.ItShouldParseSizesAttribute() =
+    member this.ItShouldParseSizesAttribute () =
         let attribute = "sizes=\"(max-width: 162px) 100vw, 162px\""
         let actual = attributeTest psizes attribute
         let sizes = {
@@ -260,6 +260,14 @@ type TestClass () =
             Widths = [ImageWidth 100.0; ImageWidth 162.0]
             }
         let expected = Sizes sizes
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseStyleAttribute () =
+        let attribute = "style=\"text-align: center;\""
+        let actual = attributeTest pstyle attribute
+        let expected = Style (StyleAttribute "text-align: center;")
 
         Assert.AreEqual(expected, actual)
 
