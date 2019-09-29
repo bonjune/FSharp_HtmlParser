@@ -39,12 +39,17 @@ type TestClass () =
     [<Test>]
     member this.ItShouldParseClassAttributeWithOneClassName () =
         let attribute = "class=\"hs-home\""
-        let actual = 
-            match run pclass attribute with 
-            | Success(result, _, _)   -> result 
-            | Failure(errorMsg, _, _) -> Class []
+        let actual = attributeTest pclass attribute
 
         let expected = Class [ ClassAttribute.create "hs-home" ]
+
+        Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseEmptyClassAttribute () =
+        let attribute = "class=\"\""
+        let actual = attributeTest pclass attribute 
+        let expected = Class []
 
         Assert.AreEqual(expected, actual)
 

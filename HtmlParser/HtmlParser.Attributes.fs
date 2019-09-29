@@ -67,7 +67,7 @@ let paria = pipe2 parianame
 
 let pautoplay = pattribute (pattrname "autoplay") pbooleanvalue (AutoplayAttribute >> Autoplay)
 
-let pclass = pattribute (pattrname "class") (many1 (pidentifiervalue |>> ClassAttribute.create)) Class
+let pclass = pattribute (pattrname "class") (many1 (pidentifiervalue |>> ClassAttribute.create) <|> stringReturn "" []) Class
 
 let pdata = pipe2 pdataname
                   (pcontentvalue .>> pstring "\"" .>> spaces)
