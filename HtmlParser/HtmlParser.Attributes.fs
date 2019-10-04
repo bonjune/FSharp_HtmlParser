@@ -3,115 +3,168 @@
 open FParsec
 open HtmlParser.Types
 
+// attribute constructor helpers
+let imageFileCtor n e = ImageFile { Name = n; Extension = e }
+let srcSetCtor s w = { Src = s; Width = w }
+let ariaCtor n c = Aria { Name = n; Content = c }
+let dataCtor n c = Data { Name = n; Content = c }
+let mediaConditionCtor c w = { Condition = c; Size = w }
+let sizesCtor m ws = { Media = m; Widths = ws }
+
 // attribute parser helpers
-let pattribute name value constr : Parser<_> = 
-    name >>. value .>> pstring "\"" .>> spaces |>> constr
+let pbeginattribute name = pstring <| name + "=\""
+let pendattribute : Parser<_> = pstring "\""
 
-let mapPstringChoice : (string list -> Parser<_>) = choice << (List.map pstring)
+let pattribute name contentParser ctor : Parser<_> = 
+    pbeginattribute name >>. contentParser .>> pendattribute .>> spaces |>> ctor
 
-let pariavalue : Parser<_> = 
+let mapPstringChoice : string list -> Parser<_> = List.map pstring >> choice
+
+let isValidChar predicates c = 
+    List.fold (||) false <| List.map (fun f -> f c) predicates
+
+let isTextSymbol = isAnyOf "_ \n,./?;:|!@#$%^&*()+=-"
+let isHtmlCommentSymbol = isAnyOf "_ \n,./?;:|!@#$%^&*()+="
+let isUrlSymbol = isAnyOf "_,./?;:!@#$%^&*()+=-"
+
+let roles = ["banner"; "button"; "complementary"; "contentinfo"; "definition"; "main"; "menuitem"; "menu"; "navigation"; "note"; "progressbar"; "search"]
+let types = ["button"; "checkbox"; "color"; "datetime-local"; "date"; "email"; "file"; "hidden"; "image"; "month"; "number"; "password"; "radio"; "range"; "reset"; "search"; "submit"; "tel"; "text/javascript"; "text"; "time"; "url"; "video/mp4"; "week"]
+
+let ptrue : Parser<_> = stringReturn "true" true
+let pfalse : Parser<_> = stringReturn "false" false
+let pnone : Parser<bool option> = stringReturn "" None
+
+let pboolean = choice [ptrue |>> Some; pfalse |>> Some; pnone]
+
+let ptext : Parser<_> = 
+    many1Satisfy <| isValidChar [isTextSymbol; isLetter; isDigit]
+
+let pname : Parser<_> = 
+    many1Satisfy <| isValidChar [isAnyOf "_-"; isLetter; isDigit] .>> spaces
+
+let pcomment : Parser<_> = 
+    many1Satisfy <| isValidChar [isHtmlCommentSymbol; isLetter; isDigit]
+
+let purl' : Parser<_> =
+    many1Satisfy <| isValidChar [isUrlSymbol; isLetter; isDigit]
+
+let parianame' = 
     mapPstringChoice ["label"; "haspopup"; "expanded"; "valuemin"; "valuemax"; "valuenow"; ]
 
-let parianame : Parser<_> = 
-    pstring "aria-" >>. pariavalue .>> pstring "=\""
-
-let pattrname name : Parser<_> = pstring (name + "=\"")
-
-let pbooleanvalue : Parser<_> = stringReturn "true" (Some true) <|> stringReturn "false" (Some false) <|> stringReturn "" None
-
-let pcontentvalue : Parser<_> = 
-    many1Satisfy (fun c -> isAnyOf "_ \n,./?;:|!@#$%^&*()+=-" c || isLetter c || isDigit c)
+let pfilename : Parser<_> = pname
+let pfileextension : Parser<_> = pchar '.' >>. many1Satisfy isLetter
 
 let pfile : Parser<_> = 
-    pipe2 (many1Satisfy (fun c -> isAnyOf "_-" c || isLetter c || isDigit c))
-          (pchar '.' >>. many1Satisfy isLetter)
-          (fun n e -> ImageFile { Name = n; Extension = e })
+    pipe2 pfilename pfileextension imageFileCtor
 
-let phtmlcommentvalue : Parser<_> = 
-    many1Satisfy (fun c -> isAnyOf "_ \n,./?;:|!@#$%^&*()+=" c || isLetter c || isDigit c)
+let parianame = 
+    pstring "aria-" >>. parianame' .>> pstring "=\""
 
-let pidentifiervalue : Parser<_> = 
-    many1Satisfy (fun c -> isAnyOf "_-" c || isLetter c || isDigit c) .>> spaces
+let pclass' = pname |>> ClassAttribute.create |> many
 
 let pdataname : Parser<_> = 
-    pstring "data-" >>. pidentifiervalue .>> pstring "=\""
+    pstring "data-" >>. pname .>> pstring "=\""
 
-let ppreloadvalue : Parser<_> =
+let pmediaunit = mapPstringChoice ["em"; "px"; "vw";]
+let pmediawidth = pfloat .>> pmediaunit
+
+let pmediacondition' : Parser<_> = 
+    let pmaxwidth = stringReturn "max-width:" MaxWidth
+    let pminwidth = stringReturn "min-width:" MinWidth
+    (pmaxwidth <|> pminwidth) .>> spaces
+
+let pmediacondition = 
+    let pcondition = pipe2 pmediacondition' pmediawidth mediaConditionCtor
+    between (pchar '(') (pchar ')') pcondition .>> spaces
+
+let ppreload' : Parser<_> =
     (mapPstringChoice ["auto"; "none"; "metadata"]) <|> (stringReturn "" "auto")
 
-let roleOptions = ["banner"; "button"; "complementary"; "contentinfo"; "definition"; "main"; "menuitem"; "menu"; "navigation"; "note"; "progressbar"; "search"]
+let prole' : Parser<_> =
+    mapPstringChoice roles .>> spaces
 
-let prolevalue : Parser<_> =
-    mapPstringChoice roleOptions .>> spaces
-
-let typeOptions = ["button"; "checkbox"; "color"; "datetime-local"; "date"; "email"; "file"; "hidden"; "image"; "month"; "number"; "password"; "radio"; "range"; "reset"; "search"; "submit"; "tel"; "text/javascript"; "text"; "time"; "url"; "video/mp4"; "week"]
-
-let ptypevalue : Parser<_> =
-    mapPstringChoice typeOptions
-
-let purlvalue : Parser<_> =
-    many1Satisfy (fun c -> isAnyOf "_,./?;:!@#$%^&*()+=-" c || isLetter c || isDigit c)
+let ptype' : Parser<_> = 
+    mapPstringChoice types
 
 let purl : Parser<_> =
-    pipe2 (mapPstringChoice ["http://"; "https://"; "#"; "/";]) purlvalue (fun h v -> h + v)
+    pipe2 (mapPstringChoice ["http://"; "https://"; "#"; "/";]) purl' (+)
+
+let psizes' = sepBy (pmediawidth |>> ImageWidth) (pchar ',' .>> spaces)
+let psizes'' = pipe2 pmediacondition psizes' sizesCtor
+
+let psrcurl = purl |>> (Url >> ImageUrl)
+let pimagesrc = spaces >>. (psrcurl <|> pfile) .>> spaces
+let psrcwidth : Parser<_> = pfloat .>> pchar 'w' |>> ImageWidth
 
 let psrcsetimage : Parser<_> =
-    pipe2 (spaces >>. (purl |>> (Url >> ImageUrl) <|> pfile) .>> spaces) (pfloat .>> pchar 'w' |>> ImageWidth) (fun i w -> { Src = i; Width = w })
+    pipe2 pimagesrc psrcwidth srcSetCtor
+
+let pcustom name ctor = 
+    pipe2 name (ptext .>> pendattribute .>> spaces) ctor
+
+let pvaluefloat : Parser<_> = pfloat |>> ValueFloat
+let pvaluebool : Parser<_> = (ptrue <|> pfalse) |>> ValueBool
+let pvaluestring : Parser<_> = ptext |>> ValueString
+
+let pvalue' = choice [pvaluefloat; pvaluebool; pvaluestring]
 
 // attribute parsers
-let palt = pattribute (pattrname "alt") (pcontentvalue |>> AltAttribute) Alt
+let paria = 
+    pcustom parianame ariaCtor
 
-let paria = pipe2 parianame 
-                  (pcontentvalue .>> pstring "\"" .>> spaces)
-                  (fun n c -> Aria { Name = n; Content = c })
+let pdata = 
+    pcustom pdataname dataCtor
 
-let pautoplay = pattribute (pattrname "autoplay") pbooleanvalue (AutoplayAttribute >> Autoplay)
+let palt = 
+    pattribute "alt" ptext (AltAttribute >> Alt)
 
-let pclass = pattribute (pattrname "class") (many1 (pidentifiervalue |>> ClassAttribute.create) <|> stringReturn "" []) Class
+let pautoplay = 
+    pattribute "autoplay" pboolean (AutoplayAttribute >> Autoplay)
 
-let pdata = pipe2 pdataname
-                  (pcontentvalue .>> pstring "\"" .>> spaces)
-                  (fun n c -> Data { Name = n; Content = c })
+let pclass = 
+    pattribute "class" pclass' Class
 
-let pheight = pattribute (pattrname "height") pfloat (ImageHeight >> Height)
+let pheight = 
+    pattribute "height" pfloat (ImageHeight >> Height)
 
-let phref = pattribute (pattrname "href") purl (HrefAttribute >> Href)
+let phref = 
+    pattribute "href" purl (HrefAttribute >> Href)
 
-let pid = pattribute (pattrname "id") pidentifiervalue (IdAttribute >> Id)
+let pid = 
+    pattribute "id" pname (IdAttribute >> Id)
 
-let ploop = pattribute (pattrname "loop") pbooleanvalue (LoopAttribute >> Loop)
+let ploop = 
+    pattribute "loop" pboolean (LoopAttribute >> Loop)
 
-let pmediawidth = mapPstringChoice ["em"; "px"; "vw";]
+let pmuted = 
+    pattribute "muted" pboolean (MutedAttribute >> Muted)
 
-let pmediaconditional : Parser<_> = (stringReturn "max-width:" MaxWidth) <|> (stringReturn "min-width:" MinWidth)
+let ppreload = 
+    pattribute "preload" ppreload' (PreloadAttribute >> Preload)
 
-let pmediacondition' = pipe2 (pmediaconditional .>> spaces) (pfloat .>> pmediawidth) (fun c w -> { Condition = c; Size = w })
+let prole = 
+    pattribute "role" (prole' |>> RoleAttribute |> many1) (Role)
 
-let pmediacondition = between (pchar '(') (pchar ')') pmediacondition'
+let psrc = 
+    pattribute "src" purl' (SrcAttribute >> Src)
 
-let pmuted = pattribute (pattrname "muted") pbooleanvalue (MutedAttribute >> Muted)
+let psrcset = 
+    pattribute "srcset" (sepBy psrcsetimage (pchar ',')) SrcSet
 
-let ppreload = pattribute (pattrname "preload") ppreloadvalue (PreloadAttribute >> Preload)
+let psizes = 
+    pattribute "sizes" psizes'' Sizes
 
-let prole = pattribute (pattrname "role") (many1 (prolevalue |>> RoleAttribute)) Role
+let pstyle = 
+    pattribute "style" ptext (StyleAttribute >> Style)
 
-let psrc = pattribute (pattrname "src") (purlvalue) (SrcAttribute >> Src)
+let ptitle = 
+    pattribute "title" ptext (TitleAttribute >> Title)
 
-let psrcset = pattribute (pattrname "srcset") (sepBy psrcsetimage (pchar ',')) SrcSet
+let ptype = 
+    pattribute "type" ptype' (TypeAttribute >> Type)
 
-let pwidthslot = pfloat .>> pmediawidth
+let pvalue = 
+    pbeginattribute "value" >>. pvalue' .>> pendattribute .>> spaces
 
-let psizes' = pipe2 (pmediacondition .>> spaces) (sepBy (pwidthslot |>> ImageWidth) (pchar ',' .>> spaces)) (fun m ws -> { Media = m; Widths = ws })
-
-let psizes = pattribute (pattrname "sizes") psizes' Sizes
-
-let pstyle = pattribute (pattrname "style") pcontentvalue (StyleAttribute >> Style)
-
-let ptitle = pattribute (pattrname "title") pcontentvalue (TitleAttribute >> Title)
-
-let ptype = pattribute (pattrname "type") ptypevalue (TypeAttribute >> Type)
-
-let pvalue' = (pfloat |>> ValueFloat <|> ((stringReturn "true" true <|> stringReturn "false" false) |>> ValueBool) <|> (pcontentvalue |>> ValueString))
-let pvalue = pattrname "value" >>. pvalue' .>> pstring "\"" .>> spaces
-
-let pwidth = pattribute (pattrname "width") pfloat (ImageWidth >> Width)
+let pwidth = 
+    pattribute "width" pfloat (ImageWidth >> Width)

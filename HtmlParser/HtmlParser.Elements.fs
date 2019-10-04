@@ -51,7 +51,7 @@ let pimgattr =
     [palt; pheight; pwidth; psrc] @ globalAttributes |> choice
 
 // html comment
-let phtmlcomment' = between (pstring "<!--") (pstring "-->") phtmlcommentvalue |>> (trim >> HtmlComment)
+let phtmlcomment' = between (pstring "<!--") (pstring "-->") pcomment |>> (trim >> HtmlComment)
 let phtmlcomment = spaces >>. phtmlcomment' .>> spaces
 
 // element parsers
