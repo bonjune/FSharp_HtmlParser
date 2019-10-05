@@ -154,6 +154,9 @@ let psizes =
 let pstyle = 
     pattribute "style" ptext (StyleAttribute >> Style)
 
+let ptabindex =
+    pattribute "tabindex" pint32 (TabIndexAttribute >> TabIndex)
+
 let ptitle = 
     pattribute "title" ptext (TitleAttribute >> Title)
 

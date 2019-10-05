@@ -70,6 +70,8 @@ type SrcSetAttribute = {
     Width : ImageWidth
     }
 
+type TabIndexAttribute = TabIndexAttribute of int
+
 type TitleAttribute = TitleAttribute of string
 
 type TypeAttribute = TypeAttribute of string

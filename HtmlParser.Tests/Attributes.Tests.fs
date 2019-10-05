@@ -276,3 +276,11 @@ type TestClass () =
 
         Assert.AreEqual(expected, actual)
 
+    [<Test>]
+    member this.ItShouldParseTabIndexAttribute () =
+        let attribute = "tabindex=\"0\""
+        let actual = attributeTest ptabindex attribute
+        let expected = TabIndex (TabIndexAttribute 0)
+
+        Assert.AreEqual(expected, actual)
+

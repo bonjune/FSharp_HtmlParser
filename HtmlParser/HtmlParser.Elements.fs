@@ -59,7 +59,7 @@ let phtmlcomment =
     spaces >>. phtmlcomment' .>> spaces
 
 // attribute options
-let globalAttributes = [pclass; pid; ptitle]
+let globalAttributes = [pclass; pid; pstyle; ptitle]
 
 let pglobalattributes =
     choice globalAttributes
@@ -101,6 +101,8 @@ let ph5 = pelement "h5" pglobalattributes H5
 
 let ph6 = pelement "h6" pglobalattributes H6
 
+let ielement = pelement "i" pglobalattributes IElement
+
 let pimg = pscelement "img" pimageattributes Img
 
 let pli = pelement "li" plineattributes Li
@@ -110,6 +112,8 @@ let ppelement = pelement "p" pglobalattributes PElement
 let pul = pelement "ul" pglobalattributes Ul
 
 let psource = pscelement "source" psourceattributes Source
+
+let pspan = pelement "span" pglobalattributes Span
 
 let pvideo = pelement "video" pvideoattributes Video
 

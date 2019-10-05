@@ -300,3 +300,15 @@ type TestClass () =
         let expected = HtmlComment "start coded_template: id:10195510643 path:generated_global_groups/10195510642.html"
 
         Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    member this.ItShouldParseSpanElement () =
+        let element = "<span style=\"color: #ffffff;\">Fortune 500 Company Advances in Retail Technology with Remote Software Team</span>"
+        let actual = elementTest pspan element
+        let expected = 
+            Span {
+                Attributes = [Style (StyleAttribute "color: #ffffff;")]
+                Content = [Content "Fortune 500 Company Advances in Retail Technology with Remote Software Team"]
+                }
+
+        Assert.AreEqual(expected, actual)

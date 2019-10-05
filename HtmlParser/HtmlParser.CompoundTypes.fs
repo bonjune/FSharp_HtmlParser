@@ -19,6 +19,7 @@ type Attributes =
     | Src of SrcAttribute
     | SrcSet of SrcSetAttribute list
     | Style of StyleAttribute
+    | TabIndex of TabIndexAttribute
     | Title of TitleAttribute
     | Type of TypeAttribute
     | ValueString of string
@@ -39,10 +40,12 @@ type ElementContent =
     | H5 of Element 
     | H6 of Element
     | HtmlComment of string
+    | IElement of Element
     | Img of ScElement
     | Li of Element 
     | PElement of Element
     | Source of ScElement
+    | Span of Element
     | Ul of Element 
     | Video of Element
     | ElementError
