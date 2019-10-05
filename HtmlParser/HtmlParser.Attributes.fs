@@ -3,7 +3,7 @@
 open FParsec
 open HtmlParser.Types
 
-// attribute constructor helpers
+// attribute constructors
 let imageFileCtor n e = ImageFile { Name = n; Extension = e }
 let srcSetCtor s w = { Src = s; Width = w }
 let ariaCtor n c = Aria { Name = n; Content = c }
@@ -41,9 +41,6 @@ let ptext : Parser<_> =
 
 let pname : Parser<_> = 
     many1Satisfy <| isValidChar [isAnyOf "_-"; isLetter; isDigit] .>> spaces
-
-let pcomment : Parser<_> = 
-    many1Satisfy <| isValidChar [isHtmlCommentSymbol; isLetter; isDigit]
 
 let purl' : Parser<_> =
     many1Satisfy <| isValidChar [isUrlSymbol; isLetter; isDigit]

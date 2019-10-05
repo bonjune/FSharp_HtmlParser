@@ -5,86 +5,115 @@ open FParsec
 open HtmlParser.Types
 open Attributes
 
+let trim (str : string) = str.Trim()
+
+// element constructors
+let elementCtor ctor a c _ = ctor { Attributes = a; Content = c }
+let selfClosingCtor ctor a = ctor { Attributes = a }
+let contentCtor c = [Content c]
+
 // html parser helpers
 let pelements, pelementsRef = createParserForwardedToRef<ElementContent list, unit>()
 
 let pcontent : Parser<_> = 
-    many1Satisfy (fun c -> isAnyOf "_ \n,./?;:|!@#$%^&*()+=-" c || isLetter c || isDigit c) |>> (fun r -> [Content r] )
+    many1Satisfy <| isValidChar [isTextSymbol; isLetter; isDigit] |>> contentCtor
 
-let elementConstructor constr a t _ = constr { Attributes = a; Content = t }
+let pbeginopentag name =
+    pstring <| "<" + name
 
-let pelement name attr constr : Parser<_> =
-    pipe3 (pstring ("<" + name) >>. spaces >>. (many attr) .>> pstring ">")
-          (spaces >>. (pcontent <|> pelements) .>> spaces)
-          (pstring ("</" + name + ">"))
-          (elementConstructor constr)
+let pendopentag : Parser<_> = pstring ">"
 
-let scElementConstructor constr a = constr { Attributes = a }
+let popentag name attributeParser =
+    pbeginopentag name >>. spaces >>. many attributeParser .>> pendopentag
 
-let pscelement name attr constr : Parser<_> =
-    pstring ("<" + name) >>. spaces >>. (many attr) .>> pstring "/>" |>> scElementConstructor constr
+let pendtag name =
+    pstring <| "</" + name + ">"
 
-let trim (str : string) = str.Trim()
+let pbeginselfclosing = pbeginopentag
+
+let pendselfclosing =
+    pstring "/>"
+
+let pelementcontent = 
+    spaces >>. pcontent <|> pelements .>> spaces
+
+let pelement name attributeParsers element : Parser<_> =
+    pipe3 (popentag name attributeParsers) pelementcontent (pendtag name) (elementCtor element)
+
+let pscelement name attributeParsers element : Parser<_> =
+    pbeginselfclosing name >>. spaces >>. many attributeParsers .>> pendselfclosing |>> selfClosingCtor element
+
+let popencomment : Parser<_> = 
+    pstring "<!--"
+
+let pclosecomment : Parser<_> = 
+    pstring "-->"
+
+let pcomment : Parser<_> = 
+    many1Satisfy <| isValidChar [isHtmlCommentSymbol; isLetter; isDigit]
+
+let phtmlcomment' = 
+    between popencomment pclosecomment pcomment |>> (trim >> HtmlComment)
+
+let phtmlcomment = 
+    spaces >>. phtmlcomment' .>> spaces
 
 // attribute options
 let globalAttributes = [pclass; pid; ptitle]
 
-let pglobalattr =
+let pglobalattributes =
     choice globalAttributes
 
-let pdivattr =
+let pdivattributes =
     [paria; pdata] @ globalAttributes |> choice
 
-let patagattr =
+let paelementattributes =
     [phref; prole] @ globalAttributes |> choice
 
-let pliattr =
+let plineattributes =
     [pvalue; prole] @ globalAttributes |> choice
 
-let psourceattr =
+let psourceattributes =
     [psrc; ptype] @ globalAttributes |> choice
 
-let pvideoattr =
+let pvideoattributes =
     [pautoplay; ploop; pmuted; ppreload] @ globalAttributes |> choice 
 
-let pimgattr =
+let pimageattributes =
     [palt; pheight; pwidth; psrc] @ globalAttributes |> choice
 
-// html comment
-let phtmlcomment' = between (pstring "<!--") (pstring "-->") pcomment |>> (trim >> HtmlComment)
-let phtmlcomment = spaces >>. phtmlcomment' .>> spaces
-
 // element parsers
-let paelement = pelement "a" patagattr AElement
+let paelement = pelement "a" paelementattributes AElement
 
-let pbody = pelement "body" pglobalattr Body
+let pbody = pelement "body" pglobalattributes Body
 
-let pdiv = pelement "div" pdivattr Div
+let pdiv = pelement "div" pdivattributes Div
 
-let ph1 = pelement "h1" pglobalattr H1
+let ph1 = pelement "h1" pglobalattributes H1
 
-let ph2 = pelement "h2" pglobalattr H2
+let ph2 = pelement "h2" pglobalattributes H2
 
-let ph3 = pelement "h3" pglobalattr H3
+let ph3 = pelement "h3" pglobalattributes H3
 
-let ph4 = pelement "h4" pglobalattr H4
+let ph4 = pelement "h4" pglobalattributes H4
 
-let ph5 = pelement "h5" pglobalattr H5
+let ph5 = pelement "h5" pglobalattributes H5
 
-let ph6 = pelement "h6" pglobalattr H6
+let ph6 = pelement "h6" pglobalattributes H6
 
-let pimg = pscelement "img" pimgattr Img
+let pimg = pscelement "img" pimageattributes Img
 
-let pli = pelement "li" pliattr Li
+let pli = pelement "li" plineattributes Li
 
-let ppelement = pelement "p" pglobalattr PElement
+let ppelement = pelement "p" pglobalattributes PElement
 
-let pul = pelement "ul" pglobalattr Ul
+let pul = pelement "ul" pglobalattributes Ul
 
-let psource = pscelement "source" psourceattr Source
+let psource = pscelement "source" psourceattributes Source
 
-let pvideo = pelement "video" pvideoattr Video
+let pvideo = pelement "video" pvideoattributes Video
 
-let elementParsers = [pbody; pdiv; paelement; pul; pli; psource; pvideo; pimg; ph1; ph2; ph3; ph4; ph5; ph6; ppelement; phtmlcomment]
+let elementParsers = 
+    [pbody; pdiv; paelement; pul; pli; psource; pvideo; pimg; ph1; ph2; ph3; ph4; ph5; ph6; ppelement; phtmlcomment]
 
 do pelementsRef := elementParsers |> choice |> many
